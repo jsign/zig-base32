@@ -253,3 +253,42 @@ test "no padding" {
         }
     }
 }
+
+test "padding" {
+    const test_cases = [_]struct {
+        bytes: []const u8,
+        expected: []const u8,
+    }{
+        .{ .bytes = "H", .expected = "JA======" },
+        .{ .bytes = "He", .expected = "JBSQ====" },
+        .{ .bytes = "Hel", .expected = "JBSWY===" },
+        .{ .bytes = "Hell", .expected = "JBSWY3A=" },
+        .{ .bytes = "Hello", .expected = "JBSWY3DP" },
+        .{ .bytes = "Hello ", .expected = "JBSWY3DPEA======" },
+        .{ .bytes = "Hello s", .expected = "JBSWY3DPEBZQ====" },
+        .{ .bytes = "Hello si", .expected = "JBSWY3DPEBZWS===" },
+        .{ .bytes = "Hello sir", .expected = "JBSWY3DPEBZWS4Q=" },
+        .{ .bytes = "Hello sir!", .expected = "JBSWY3DPEBZWS4RB" },
+    };
+
+    inline for (test_cases) |tc| {
+        // Encoding.
+        {
+            const size = standard.Encoder.calcSize(tc.bytes.len);
+            const buf = try std.testing.allocator.alloc(u8, size);
+            defer std.testing.allocator.free(buf);
+            const a = standard.Encoder.encode(buf, tc.bytes);
+            try std.testing.expectEqual(size, a.len);
+            try std.testing.expectEqualSlices(u8, tc.expected, a);
+        }
+
+        // Decoding
+        {
+            const size = try standard.Decoder.calcSizeForSlice(tc.expected);
+            const buf = try std.testing.allocator.alloc(u8, size);
+            defer std.testing.allocator.free(buf);
+            try standard.Decoder.decode(buf, tc.expected);
+            try std.testing.expectEqualSlices(u8, tc.bytes, buf);
+        }
+    }
+}
