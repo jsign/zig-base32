@@ -19,6 +19,7 @@ pub const Codecs = struct {
 };
 
 pub const standard_alphabet_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567".*;
+pub const standard_alphabet_chars_lower = "abcdefghijklmnopqrstuvwxyz234567".*;
 
 /// Standard Base32 codecs, with padding
 pub const standard = Codecs{
@@ -34,6 +35,22 @@ pub const standard_no_pad = Codecs{
     .pad_char = null,
     .Encoder = Base32Encoder.init(standard_alphabet_chars, null),
     .Decoder = Base32Decoder.init(standard_alphabet_chars, null),
+};
+
+/// Standard Base32 codecs, with padding, lower case
+pub const standard_lower = Codecs{
+    .alphabet_chars = standard_alphabet_chars_lower,
+    .pad_char = '=',
+    .Encoder = Base32Encoder.init(standard_alphabet_chars_lower, '='),
+    .Decoder = Base32Decoder.init(standard_alphabet_chars_lower, '='),
+};
+
+/// Standard Base32 codecs, without padding, lower case
+pub const standard_no_pad_lower = Codecs{
+    .alphabet_chars = standard_alphabet_chars_lower,
+    .pad_char = null,
+    .Encoder = Base32Encoder.init(standard_alphabet_chars_lower, null),
+    .Decoder = Base32Decoder.init(standard_alphabet_chars_lower, null),
 };
 
 pub const Base32Encoder = struct {
