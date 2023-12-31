@@ -145,9 +145,23 @@ pub const Base32Decoder = struct {
         const source_len = source.len;
         var result = try decoder.calcSizeUpperBound(source_len);
         if (decoder.pad_char) |pad_char| {
-            inline for (1..7) |i| {
-                if (source_len >= i and source[source_len - i] == pad_char) result -= 1;
+            var i: usize = source.len;
+            var k: usize = 0;
+            while (i > 0) {
+                i -= 1;
+                if (source[i] != pad_char) {
+                    break;
+                }
+                k += 1;
             }
+            result -= switch (k) {
+                0 => 0,
+                6 => 4,
+                4 => 3,
+                3 => 2,
+                1 => 1,
+                else => return error.InvalidPadding,
+            };
         }
         return result;
     }
@@ -184,7 +198,7 @@ pub const Base32Decoder = struct {
         if (decoder.pad_char) |pad_char| {
             const padding_len: u4 = switch (acc_len) {
                 2 => 6,
-                4 => 2,
+                4 => 4,
                 1 => 3,
                 3 => 1,
                 else => return error.InvalidPadding,
