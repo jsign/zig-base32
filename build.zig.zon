@@ -1,6 +1,10 @@
 .{
     .name = "zig-base32",
-    .version = "0.1.0",
-    .paths = .{"src"},
+    .version = "0.2.0",
+    .paths = .{
+        "src",
+        "build.zig",
+        "build.zig.zon",
+    },
     .dependencies = .{},
 }

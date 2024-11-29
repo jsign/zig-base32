@@ -5,11 +5,11 @@ pub fn build(b: *std.Build) void {
 
     const optimize = b.standardOptimizeOption(.{});
 
-    _ = b.addModule("zig-base32", .{ .source_file = .{ .path = "src/base32.zig" } });
+    _ = b.addModule("zig-base32", .{ .root_source_file = b.path("src/base32.zig") });
 
     const lib = b.addStaticLibrary(.{
         .name = "zig-base32",
-        .root_source_file = .{ .path = "src/main.zig" },
+        .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
     });
@@ -17,7 +17,7 @@ pub fn build(b: *std.Build) void {
     b.installArtifact(lib);
 
     const main_tests = b.addTest(.{
-        .root_source_file = .{ .path = "src/main.zig" },
+        .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
     });
